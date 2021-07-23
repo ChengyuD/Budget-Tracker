@@ -1,6 +1,5 @@
 # Budget-Tracker
 
-# Workout-Tracker
 
 ## Table Content
 - [Deployed Link](#deployed-link)
@@ -10,13 +9,17 @@
 - [License](#license)
 
 
+
 ## Deployed Link
+
 
 
 ## Screentshot
 
 
+
 ## Demo
+
 
 
 ## Languages & Technologies
@@ -30,6 +33,7 @@
 - MongoDB Atlas
 - Heroku
 - PWA
+
 
 
 ## License
