@@ -1,79 +1,59 @@
 let db;
-let budgetVersion;
 
-const request = indexedDB.open('BudgetDB', budgetVersion || 21);
+const request = indexedDB.open('Budget', 1);
 
-request.onupgradeneeded = function (e) {
-    console.log('Upgrade needed in IndexDB');
-
-    const { oldVersion } = e;
-    const newVersion = e.newVersion || db.Version;
-
-    console.log(`DB updated from version ${oldVersion} to ${newVersion}`);
-
-    db = e.target.result;
-
-    if (db.objectStoreNames.length  === 0) {
-        db.createdObjectStore('BudgetStore', { autoIncrement: true});
-    }
-};
-
-request.onerror = function (e) {
-    console.log(`Woops! ${e/target.errorCode}`);
-};
-
-function checkDatabase() {
-    console.log('check db invoked');
-
-    let transaction = db.transaction(['BudgetStore'], 'readwrite');
-
-    const store = transaction.objectStore('BudgetStore');
-
-    const getAll = store.getAll();
-
-    getAll.onsuccess = function () {
-        if (getAll,result.length > 0) {
-            fetch('api/transaction/bulk', {
-                method: 'POST',
-                body: JSON.stringify(getAll.result),
-                headers: {
-                    Accept: 'application/json, text/plain, */*',
-                    'Content-Type': 'applicatioin/json',
-                },
-            })
-            .then((response) => response.json())
-            .then((res) => {
-                if (res.length !== 0) {
-                    transaction = db.transaction(['BudgetStore'], 'readwrite');
-
-                    const currentStore = transaction.ojbectStore('BudgetStore');
-
-                    currentStore.clear(0);
-                    console.log('Clearing store 🧹');
-                }
-            });
-        }
-    };
-}
-
-request.onsuccess = function (e) {
-    console.log('success');
-    db = e.target.result;
-
+request.onupgradeneeded = function (event) {
+    const db = event.target.result;
+    db.createObjectStore("pending", { autoIncrement: true });
+  };
+  
+  request.onsuccess = function (event) {
+    db = event.target.result;
+  
     if (navigator.onLine) {
-        console.log('Backend online! 🗄️');
-        checkDatabase();
+      checkDatabase();
     }
-};
-
-const saveRecord = (record) => {
-    console.log('Save record invoked');
-
-    const transaction = db.transaction(['BudgetStore'], 'readwrite');
-
-    const store = transaction.ojectStore('BudgetStore');
-
+  };
+  
+  request.onerror = function (event) {
+    console.log("Woops! " + event.target.errorCode);
+  };
+  
+  function saveRecord(record) {
+    const transaction = db.transaction(["pending"], "readwrite");
+    const store = transaction.objectStore("pending");
+  
     store.add(record);
-};
-
-window.addEventListener('online', checkDatabase);
+  }
+  
+  function checkDatabase() {
+    const transaction = db.transaction(["pending"], "readwrite");
+    const store = transaction.objectStore("pending");
+    const getAll = store.getAll();
+  
+    getAll.onsuccess = function () {
+      if (getAll.result.length > 0) {
+        fetch("/api/transaction/bulk", {
+          method: "POST",
+          body: JSON.stringify(getAll.result),
+          headers: {
+            Accept: "application/json, text/plain, */*",
+            "Content-Type": "application/json"
+          }
+        })
+          .then(response => response.json())
+          .then(() => {
+            const transaction = db.transaction(["pending"], "readwrite");
+            const store = transaction.objectStore("pending");
+            store.clear();
+          });
+      }
+    };
+  }
+  function deletePending() {
+    const transaction = db.transaction(["pending"], "readwrite");
+    const store = transaction.objectStore("pending");
+    store.clear();
+  }
+  
+  window.addEventListener("online", checkDatabase);
