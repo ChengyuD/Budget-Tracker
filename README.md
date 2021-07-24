@@ -12,6 +12,8 @@
 
 ## Deployed Link
 
+https://git.heroku.com/safe-island-15975.git
+
 
 
 ## Screentshot
