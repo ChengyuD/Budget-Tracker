@@ -7,7 +7,7 @@ fetch("/api/transaction")
   })
   .then(data => {
     // save db data on global variable
-    transactions = data;
+    transactions = data || [];
 
     populateTotal();
     populateTable();
@@ -52,7 +52,7 @@ function populateChart() {
   });
 
   // create incremental values for chart
-  let data = reversed.map((t) => {
+  let data = reversed.map(t => {
     sum += parseInt(t.value);
     return sum;
   });
@@ -123,7 +123,7 @@ function sendTransaction(isAdding) {
       "Content-Type": "application/json"
     }
   })
-  .then((response) => {    
+  .then(response => {    
     return response.json();
   })
   .then((data) => {
