@@ -12,7 +12,7 @@
 
 ## Deployed Link
 
-https://git.heroku.com/safe-island-15975.git
+https://nameless-taiga-20259.herokuapp.com/
 
 
 
